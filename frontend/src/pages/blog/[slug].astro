@@ -1,0 +1,22 @@
+---
+import BlogPost from '../../layouts/BlogPost.astro';
+
+import fetchApi from '../../lib/strapi';
+import type { StrapiPost} from '../../interfaces/post';
+
+export async function getStaticPaths() {
+  const posts = await fetchApi<StrapiPost[]>({
+    endpoint: 'posts',
+    wrappedByKey: 'data',
+  });
+
+  return posts.map((post) => ({
+    params: { slug: post.attributes.slug },
+    props: post,
+  }));
+}
+type Props = StrapiPost;
+const post: StrapiPost = Astro.props;
+---
+
+<BlogPost { ...post }/>

@@ -1,0 +1,11 @@
+---
+import fetchApi from '../lib/strapi';
+import Layout from '../layouts/BlogPost.astro';
+import type { StrapiPost } from '../interfaces/post';
+
+const about = await fetchApi<StrapiPost[]>({ 
+	endpoint: 'about', wrappedByKey: 'data' 
+});
+---
+
+<Layout { ...about }/>
