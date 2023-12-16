@@ -7,7 +7,13 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import FormattedDate from '../../components/FormattedDate.astro';
 import type { StrapiPost } from '../../interfaces/post';
 
-const posts = await fetchApi<StrapiPost[]>({ endpoint: 'posts', wrappedByKey: 'data' });
+// export const prerender = true;
+const posts: StrapiPost[] = await fetchApi<StrapiPost[]>({ 
+	endpoint: 'posts', wrappedByKey: 'data',
+	query: { 
+		populate: '*', 
+	}
+});
 ---
 
 <!doctype html>
@@ -90,17 +96,21 @@ const posts = await fetchApi<StrapiPost[]>({ endpoint: 'posts', wrappedByKey: 'd
 			<section>
 				<ul>
 					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.attributes.slug}/`}>
-									<img width={720} height={360} src={post.attributes.image} alt="Image blog" />
-									<h4 class="title">{post.attributes.title}</h4>
-									<p class="date">
-										<FormattedDate date={new Date(post.attributes.updatedAt)} />
-									</p>
-								</a>
-							</li>
-						))
+						posts.map((post) => {
+							const imageUrl: string = post.attributes.image?.data ? 
+	    						`http://localhost:1337${post.attributes.image.data.attributes.url}` : 'https://placehold.co/480x220';
+							return (
+								<li>
+									<a href={`/blog/${post.attributes.slug}/`}>
+										<img width={480} height={360} src={imageUrl} alt="Image blog" />
+										<h4 class="title">{post.attributes.title}</h4>
+										<p class="date">
+											<FormattedDate date={post.attributes.updatedAt} />
+										</p>
+									</a>
+								</li>
+							)
+						})
 					}
 				</ul>
 			</section>

@@ -1,0 +1,75 @@
+version: "3"
+services:
+  strapi:
+    container_name: strapi
+    build:
+      context: ./backend
+      dockerfile: ./docker/Dockerfile
+    image: blog-strapi:latest
+    restart: unless-stopped
+    environment:
+      DATABASE_HOST: strapipg
+      DATABASE_CLIENT: ${DATABASE_CLIENT}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PORT: ${DATABASE_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+    volumes:
+      - ./backend/config:/opt/app/config
+      - ./backend/src:/opt/app/src
+      - ./backend/package.json:/opt/package.json
+      - ./backend/package-lock.json:/opt/package-lock.json
+      - ./backend/.env:/opt/app/.env
+    ports:
+      - "1337:1337"
+    networks:
+      - blog
+    depends_on:
+      - strapipg
+  strapipg:
+    image: postgres:12.0-alpine
+    container_name: strapipg
+    platform: linux/amd64 #for platform error on Apple M1 chips
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - strapi-data:/var/lib/postgresql/data/ #using a volume
+    ports:
+      - "25432:5432"
+    networks:
+      - blog
+  astro:
+    container_name: astro
+    build:
+      context: ./frontend
+      dockerfile: ./docker/Dockerfile
+    image: blog-astro:latest
+    restart: unless-stopped
+    env_file:
+      - ./frontend/.env
+      - .env
+    environment:
+      STRAPI_URL: ${HOST}:${PORT}
+      PORT: 8080
+    volumes:
+      - astro-data:/app/
+    ports:
+      - "4321:4321"
+      - "8080:8080"
+    networks:
+      - blog
+    depends_on:
+      - strapi
+volumes:
+    strapi-data:
+    astro-data:
+networks:
+  blog:
+    name: Blog
+    driver: bridge

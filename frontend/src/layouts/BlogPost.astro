@@ -6,10 +6,11 @@ import FormattedDate from '../components/FormattedDate.astro';
 import type { StrapiPost } from '../interfaces/post';
 
 type Props = StrapiPost;
-const { id, attributes: {
+const { attributes: {
 		title, image, updatedAt, content, slug
 } } = Astro.props;
-
+const imageUrl: string = image?.data? 
+	`http://localhost:1337${image.data.attributes.url}` : 'https://placehold.co/600x400';
 ---
 
 <html lang="en">
@@ -61,7 +62,7 @@ const { id, attributes: {
 		<main>
 			<article>
 				<div class="hero-image">
-					{image && <img width={1020} height={510} src={image} alt="" />}
+					{imageUrl && <img width={480} height={360} src={imageUrl} alt="" />}
 				</div>
 				<div class="prose">
 					<div class="title">
