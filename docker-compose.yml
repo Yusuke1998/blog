@@ -1,10 +1,11 @@
-version: "3"
+version: "3.5"
 services:
   strapi:
     container_name: strapi
     build:
       context: ./backend
       dockerfile: ./docker/Dockerfile
+    command: ["yarn", "start"] #develop
     image: blog-strapi:latest
     restart: unless-stopped
     environment:
@@ -23,10 +24,16 @@ services:
       - ./backend/package.json:/opt/package.json
       - ./backend/package-lock.json:/opt/package-lock.json
       - ./backend/.env:/opt/app/.env
+      - strapi-data:/opt/app/public/
     ports:
       - "1337:1337"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "-I", "http://localhost:1337/_health", "||", "exit", "1"]
+      timeout: 5s
+      interval: 5s
+      retries: 10
     networks:
-      - blog
+      - myblog
     depends_on:
       - strapipg
   strapipg:
@@ -39,37 +46,34 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
     volumes:
-      - strapi-data:/var/lib/postgresql/data/ #using a volume
+      - strapipg-data:/var/lib/postgresql/data/ #using a volume
     ports:
       - "25432:5432"
     networks:
-      - blog
+      - myblog
   astro:
     container_name: astro
     build:
       context: ./frontend
       dockerfile: ./docker/Dockerfile
+    command: npm run prod
     image: blog-astro:latest
     restart: unless-stopped
-    env_file:
-      - ./frontend/.env
-      - .env
-    environment:
-      STRAPI_URL: ${HOST}:${PORT}
-      PORT: 8080
     volumes:
       - astro-data:/app/
     ports:
       - "4321:4321"
-      - "8080:8080"
+    environment:
+      - STRAPI_URL=http://strapi:1337 #important
+      - STRAPI_ASSETS_URL=https://admin-blog.jhonnyprz.site #important public host
     networks:
-      - blog
+      - myblog
     depends_on:
       - strapi
 volumes:
+    strapipg-data:
     strapi-data:
     astro-data:
 networks:
-  blog:
-    name: Blog
+  myblog:
     driver: bridge

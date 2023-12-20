@@ -1,13 +1,12 @@
 ---
-import fetchApi from '../../lib/strapi';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import BaseHead from '../../components/BaseHead.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import FormattedDate from '../../components/FormattedDate.astro';
 import type { StrapiPost } from '../../interfaces/post';
+import fetchApi from '../../lib/strapi';
 
-// export const prerender = true;
 const posts: StrapiPost[] = await fetchApi<StrapiPost[]>({ 
 	endpoint: 'posts', wrappedByKey: 'data',
 	query: { 
@@ -98,7 +97,7 @@ const posts: StrapiPost[] = await fetchApi<StrapiPost[]>({
 					{
 						posts.map((post) => {
 							const imageUrl: string = post.attributes.image?.data ? 
-	    						`http://localhost:1337${post.attributes.image.data.attributes.url}` : 'https://placehold.co/480x220';
+	    						`${import.meta.env.STRAPI_ASSETS_URL}${post.attributes.image.data.attributes.url}` : 'https://placehold.co/480x220';
 							return (
 								<li>
 									<a href={`/blog/${post.attributes.slug}/`}>

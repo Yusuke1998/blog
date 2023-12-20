@@ -22,8 +22,8 @@ export default async function fetchApi<T>({
     if (endpoint.startsWith('/')) {
         endpoint = endpoint.slice(1);
     }
-    const url = new URL(`${import.meta.env.STRAPI_URL}/api/${endpoint}`);
-    console.log({ url })
+    const apiHost = import.meta.env.STRAPI_URL || 'http://127.0.0.1:1337'
+    const url = new URL(`${apiHost}/api/${endpoint}`);
     if (query) {
         Object.entries(query).forEach(([key, value]) => {
             url.searchParams.append(key, value);
