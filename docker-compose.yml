@@ -1,0 +1,79 @@
+version: "3.5"
+services:
+  strapi:
+    container_name: strapi
+    build:
+      context: ./backend
+      dockerfile: ./docker/Dockerfile
+    command: ["yarn", "start"] #develop
+    image: blog-strapi:latest
+    restart: unless-stopped
+    environment:
+      DATABASE_HOST: strapipg
+      DATABASE_CLIENT: ${DATABASE_CLIENT}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PORT: ${DATABASE_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+    volumes:
+      - ./backend/config:/opt/app/config
+      - ./backend/src:/opt/app/src
+      - ./backend/package.json:/opt/package.json
+      - ./backend/package-lock.json:/opt/package-lock.json
+      - ./backend/.env:/opt/app/.env
+      - strapi-data:/opt/app/public/
+    ports:
+      - "1337:1337"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "-I", "http://localhost:1337/_health", "||", "exit", "1"]
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    networks:
+      - myblog
+    depends_on:
+      - strapipg
+  strapipg:
+    image: postgres:12.0-alpine
+    container_name: strapipg
+    platform: linux/amd64 #for platform error on Apple M1 chips
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - strapipg-data:/var/lib/postgresql/data/ #using a volume
+    ports:
+      - "25432:5432"
+    networks:
+      - myblog
+  astro:
+    container_name: astro
+    build:
+      context: ./frontend
+      dockerfile: ./docker/Dockerfile
+    command: npm run prod
+    image: blog-astro:latest
+    restart: unless-stopped
+    volumes:
+      - astro-data:/app/
+    ports:
+      - "4321:4321"
+    environment:
+      - STRAPI_URL=http://strapi:1337 #important
+      - STRAPI_ASSETS_URL=https://admin-blog.jhonnyprz.site #important public host
+    networks:
+      - myblog
+    depends_on:
+      - strapi
+volumes:
+    strapipg-data:
+    strapi-data:
+    astro-data:
+networks:
+  myblog:
+    driver: bridge

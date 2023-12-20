@@ -1,11 +1,16 @@
 ---
-import fetchApi from '../lib/strapi';
 import Layout from '../layouts/BlogPost.astro';
 import type { StrapiPost } from '../interfaces/post';
+import fetchApi from '../lib/strapi';
 
-const about = await fetchApi<StrapiPost[]>({ 
-	endpoint: 'about', wrappedByKey: 'data' 
+export const prerender = true;
+const about: StrapiPost = await fetchApi<StrapiPost>({ 
+	endpoint: 'about', wrappedByKey: 'data',
+	query: { 
+		populate: '*', 
+	}
 });
+about.attributes.title = about.attributes.title || 'about'
 ---
 
 <Layout { ...about }/>

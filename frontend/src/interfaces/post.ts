@@ -3,8 +3,8 @@ export interface StrapiPost {
     attributes: {
         title: string;
         slug: string;
-        content: string;
-        image?: string;
+        content: any;
+        image: any;
         updatedAt: string;
     };
 }

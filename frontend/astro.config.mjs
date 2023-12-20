@@ -1,11 +1,17 @@
 import { defineConfig } from 'astro/config';
-import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import node from "@astrojs/node";
+import mdx from '@astrojs/mdx';
 
 import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://example.com',
-  integrations: [mdx(), sitemap(), tailwind()]
+  site: 'https://blog.jhonnyprz.site',
+  integrations: [mdx(), sitemap(), tailwind()],
+  output: 'hybrid',
+  server: { port: 8080 },
+  adapter: node({
+    mode: "standalone"
+  })
 });
