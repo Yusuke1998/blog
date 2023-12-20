@@ -9,7 +9,7 @@ import tailwind from "@astrojs/tailwind";
 export default defineConfig({
   site: 'https://blog.jhonnyprz.site',
   integrations: [mdx(), sitemap(), tailwind()],
-  output: 'server',
+  output: 'hybrid',
   server: { port: 8080 },
   adapter: node({
     mode: "standalone"
