@@ -1,0 +1,22 @@
+name: Docker Compose Action
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Generate .env
+      run: cp .env.example .env
+      
+    - name: Run Docker Compose
+      uses: isbang/compose-action@v1.5.1
+      with:
+        compose-file: "./docker-compose.yml"
+        down-flags: "--volumes"
+        services: "strapipg strapi astro"
