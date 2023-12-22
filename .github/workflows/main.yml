@@ -12,11 +12,37 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Generate .env
-      run: cp .env.example .env
+      run: |
+        cp .env.example .env
+        cp ./frontend/.env.example ./frontend/.env
+        cp ./backend/.env.example ./backend/.env
+
+    - name: Build Docker Images
+      run: docker-compose build
       
     - name: Run Docker Compose
       uses: isbang/compose-action@v1.5.1
       with:
         compose-file: "./docker-compose.yml"
         down-flags: "--volumes"
-        services: "strapipg strapi astro"
+        services: |
+          strapipg
+          strapi
+          astro
+      env:
+        NODE_ENV: "production"
+        DATABASE_HOST: "strapipg"
+
+    - name: Check Docker Services
+      run: docker ps
+
+    - name: Check Docker Services Off
+      run: docker ps -a
+    
+    - name: Run Tests
+      run: |
+        # Aquí puedes ejecutar tus pruebas automatizadas.
+        echo "Running tests..."
+
+    - name: Cleanup
+      run: docker-compose down --rmi all
