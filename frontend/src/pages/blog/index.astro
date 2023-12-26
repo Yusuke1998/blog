@@ -2,17 +2,8 @@
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import BaseHead from '../../components/BaseHead.astro';
+import GridPost from "../../components/GridPost.vue";
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
-import FormattedDate from '../../components/FormattedDate.astro';
-import type { StrapiPost } from '../../interfaces/post';
-import fetchApi from '../../lib/strapi';
-
-const posts: StrapiPost[] = await fetchApi<StrapiPost[]>({ 
-	endpoint: 'posts', wrappedByKey: 'data',
-	query: { 
-		populate: '*', 
-	}
-});
 ---
 
 <!doctype html>
@@ -93,25 +84,7 @@ const posts: StrapiPost[] = await fetchApi<StrapiPost[]>({
 		<Header />
 		<main>
 			<section>
-				<ul>
-					{
-						posts.map((post) => {
-							const imageUrl: string = post.attributes.image?.data ? 
-	    						`${import.meta.env.STRAPI_ASSETS_URL}${post.attributes.image.data.attributes.url}` : 'https://placehold.co/480x220';
-							return (
-								<li>
-									<a href={`/blog/${post.attributes.slug}/`}>
-										<img width={480} height={360} src={imageUrl} alt="Image blog" />
-										<h4 class="title">{post.attributes.title}</h4>
-										<p class="date">
-											<FormattedDate date={post.attributes.updatedAt} />
-										</p>
-									</a>
-								</li>
-							)
-						})
-					}
-				</ul>
+				<GridPost client:only/>
 			</section>
 		</main>
 		<Footer />
