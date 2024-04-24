@@ -5,6 +5,8 @@ export interface StrapiPost {
         slug: string;
         content: any;
         image: any;
+        createdAt: string;
         updatedAt: string;
+        publishedAt: string;
     };
 }

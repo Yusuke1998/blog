@@ -59,8 +59,6 @@ services:
     command: npm run prod
     image: blog-astro:latest
     restart: unless-stopped
-    volumes:
-      - astro-data:/app/
     ports:
       - "4321:4321"
     environment:
@@ -73,7 +71,6 @@ services:
 volumes:
     strapipg-data:
     strapi-data:
-    astro-data:
 networks:
   myblog:
     driver: bridge
