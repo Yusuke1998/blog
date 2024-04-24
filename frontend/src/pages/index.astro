@@ -2,6 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import TimeLinePost from '../components/TimeLinePost.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
 
@@ -13,7 +14,15 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 	<body>
 		<Header title={SITE_TITLE} />
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
+			<section class="bg-gray dark:bg-gray-900">
+				<div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16">
+					<h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Este es mi blog</h1>
+					<p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 dark:text-gray-400">Aqui solo encontraras mis post sobre cosas que hago, temas random que trato de documentar solo por compartir pero tambien por si mas adelante no recuerdo como se hacen.</p>
+				</div>
+			</section>
+			<section>
+				<TimeLinePost/>
+			</section>
 		</main>
 		<Footer />
 	</body>
