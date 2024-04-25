@@ -59,13 +59,11 @@ services:
     command: npm run prod
     image: blog-astro:latest
     restart: unless-stopped
-    volumes:
-      - astro-data:/app/
     ports:
       - "4321:4321"
     environment:
-      - STRAPI_URL=http://strapi:1337 #important
-      - STRAPI_ASSETS_URL=https://admin-blog.jhonnyprz.site #important public host
+      - PUBLIC_STRAPI_URL=http://strapi:1337 #important
+      - PUBLIC_STRAPI_ASSETS_URL=https://admin-blog.jhonnyprz.site #important public host
     networks:
       - myblog
     depends_on:
@@ -73,7 +71,6 @@ services:
 volumes:
     strapipg-data:
     strapi-data:
-    astro-data:
 networks:
   myblog:
     driver: bridge
